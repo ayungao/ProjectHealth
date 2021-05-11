@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!--1：包扫描-->
+    <dubbo:annotation package="com.itheima.health.controller"/>
+    <!--2：视图解析器-->
+    <!--3：springmvc注解驱动，自动配置mvc的处理器适配器和处理映射器-->
+    <mvc:annotation-driven>
+        <mvc:message-converters register-defaults="true">
+            <!--不需要视图解析器，项目中的所有的请求都返回json数据结构-->
+            <bean class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
+                <property name="supportedMediaTypes" value="application/json"/>
+                <property name="features">
+                    <list>
+                        <!--Map类型格式化，接收参数允许空值
+                        User{name, age} => new User('zhangsan') => user{username: 'zhangsan'}
+                        WriteMapNullValue
+                        User{name, age} => new User('zhangsan') => user{username: 'zhangsan',age:null}
+                        -->
+                        <value>WriteMapNullValue</value>
+                        <!--日期类型格式化  数值15..... 毫秒级的时间戳
+                        WriteDateUseDateFormat yyyy-MM-dd hh:mm:ss
+                        -->
+                        <value>WriteDateUseDateFormat</value>
+                    </list>
+                </property>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+    
+    <dubbo:application name="health_web"/>
+    <dubbo:registry address="zookeeper://127.0.0.1:2181"/>
+    <dubbo:consumer timeout="600000" check="false"/>
+    <!--文件上传组件-->
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="104857600" />
+        <property name="maxInMemorySize" value="4096" />
+        <property name="defaultEncoding" value="UTF-8"/>
+    </bean>
+
+</beans>
