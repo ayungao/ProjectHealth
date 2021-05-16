@@ -18,4 +18,49 @@
         insert into t_checkgroup_checkitem (checkgroup_id, checkitem_id)
         values (#{checkGroupId}, #{checkitemId})
     </insert>
+
+    <!--    更新检查组-->
+    <update id="update" parameterType="com.itheima.health.pojo.CheckGroup">
+        update t_checkgroup
+        set code=#{code},
+            name=#{name},
+            helpCode=#{helpCode},
+            sex=#{sex},
+            remark=#{remark},
+            attention=#{attention}
+        where id = #{id}
+    </update>
+
+    <!--    删除检查组和检查项的关联-->
+    <delete id="deleteCheckGroupCheckItem" parameterType="int">
+        delete
+        from t_checkgroup_checkitem
+        where checkgroup_id = #{id}
+    </delete>
+
+    <!--    分页查询检查组-->
+    <select id="findPage" parameterType="string" resultType="com.itheima.health.pojo.CheckGroup">
+        select * from t_checkgroup
+        <where>
+            <if test="value != null and value.length > 0">
+                code like #{queryString} or name like #{queryString} or helpCode like #{queryString}
+            </if>
+        </where>
+    </select>
+
+    <!--    通过id回显检查组信息-->
+    <select id="findById" parameterType="int" resultType="com.itheima.health.pojo.CheckGroup">
+        select *
+        from t_checkgroup
+        where id = #{id}
+    </select>
+
+    <!--    通过检查组id查询包含的检查项-->
+    <select id="findCheckItemIdsByCheckGroupId" parameterType="int" resultType="java.lang.Integer">
+        select checkitem_id
+        from t_checkgroup_checkitem
+        where checkgroup_id = #{id}
+    </select>
+
+
 </mapper>

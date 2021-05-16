@@ -57,7 +57,7 @@
             <div class="filter-container">
                 <el-input placeholder="编码/名称/助记码" v-model="pagination.queryString" style="width: 200px;"
                           class="filter-item" @keyup.enter.native="handleFilter"></el-input>
-                <el-button @click="findPage()" class="dalfBut">查询</el-button>
+                <el-button @click="handleCurrentChange(1)" class="dalfBut">查询</el-button>
                 <el-button type="primary" class="butT" @click="handleCreate()">新建</el-button>
             </div>
             <el-table size="small" current-row-key="id" :data="dataList" stripe highlight-current-row>
@@ -284,6 +284,17 @@
         methods: {
             //编辑
             handleEdit() {
+                axios.post("/checkgroup/update.do?checkitemIds=" + this.checkitemIds, this.formData).then(res => {
+                    this.$message({
+                        message: res.data.message,
+                        type: res.data.flag ? "success" : "error",
+                        showClose: true
+                    });
+                    if (res.data.flag) {
+                        this.dialogFormVisible4Edit = false
+                        this.findPage()
+                    }
+                })
             },
             //添加
             handleAdd() {
@@ -302,6 +313,18 @@
             },
             //分页查询
             findPage() {
+                axios.post("/checkgroup/findPage.do", this.pagination).then(res => {
+                    this.$message({
+                        message: res.data.message,
+                        type: res.data.flag ? "success" : "error",
+                        showClose: true
+                    });
+
+                    if (res.data.flag) {
+                        this.dataList = res.data.data.rows
+                        this.pagination.total = res.data.data.total
+                    }
+                })
             },
             // 重置表单
             resetForm() {
@@ -325,9 +348,50 @@
             },
             // 弹出编辑窗口
             handleUpdate(row) {
+                this.resetForm()
+                this.dialogFormVisible4Edit = true
+                var id = row.id;
+                //回显checkgroup表单数据
+                axios.post("/checkgroup/findById.do?id=" + id).then(res => {
+                    if (res.data.flag) {
+                        this.formData = res.data.data
+                        //回显所有checkitem
+                        axios.get("/checkitem/findAll.do").then(res2 => {
+                            if (res2.data.flag) {
+                                this.tableData = res2.data.data
+                                //回显此检查组选中的检查项
+                                axios.post("/checkgroup/findCheckItemIdsByCheckGroupId.do?id=" + id).then(res3 => {
+                                    if (res3.data.flag) {
+                                        this.checkitemIds = res3.data.data
+                                    } else {
+                                        this.$message({
+                                            message: res3.data.message,
+                                            type: res3.data.flag ? "success" : "error",
+                                            showClose: true
+                                        });
+                                    }
+                                })
+                            } else {
+                                this.$message({
+                                    message: res2.data.message,
+                                    type: res2.data.flag ? "success" : "error",
+                                    showClose: true
+                                });
+                            }
+                        })
+                    } else {
+                        this.$message({
+                            message: res.data.message,
+                            type: res.data.flag ? "success" : "error",
+                            showClose: true
+                        });
+                    }
+                })
             },
             //切换页码
             handleCurrentChange(currentPage) {
+                this.pagination.currentPage = currentPage
+                this.findPage()
             },
             // 删除
             handleDelete(row) {
