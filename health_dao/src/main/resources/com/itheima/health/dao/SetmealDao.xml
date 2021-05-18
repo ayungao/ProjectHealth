@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.health.dao.SetmealDao">
+
+    <!--    添加套餐-->
+    <insert id="add" parameterType="com.itheima.health.pojo.Setmeal">
+        insert into t_setmeal (name, code, helpCode, sex, age, price, remark, attention, img)
+        values (#{name}, #{code}, #{helpCode}, #{sex}, #{age}, #{price}, #{remark}, #{attention}, #{img})
+        <selectKey keyProperty="id" resultType="int" order="AFTER">
+            select last_insert_id()
+        </selectKey>
+    </insert>
+
+    <!--    添加套餐和检查组的关系-->
+    <insert id="addSetmealCheckGroup" parameterType="int">
+        insert into t_setmeal_checkgroup (setmeal_id, checkgroup_id)
+        values (#{id}, #{checkgroupId})
+    </insert>
+
+    <!--    提交套餐编辑-->
+    <update id="update" parameterType="com.itheima.health.pojo.Setmeal">
+        update t_setmeal
+        set name=#{name},
+            code=#{code},
+            helpCode=#{helpCode},
+            sex=#{sex},
+            age=#{age},
+            price=#{price},
+            remark=#{remark},
+            attention=#{attention},
+            img=#{img}
+        where id = #{id}
+    </update>
+
+    <!--    删除原套餐和检查组的关联-->
+    <delete id="deleteSetmealCheckGroup" parameterType="int">
+        delete
+        from t_setmeal_checkgroup
+        where setmeal_id = #{id}
+    </delete>
+
+    <!--    删除套餐-->
+    <delete id="deleteById" parameterType="int">
+        delete
+        from t_setmeal
+        where id = #{id}
+    </delete>
+
+    <!--    分页查询套餐-->
+    <select id="findPage" parameterType="string" resultType="com.itheima.health.pojo.Setmeal">
+        select * from t_setmeal
+        <where>
+            <if test="value!=null and value.length>0">
+                name like #{queryString} or code like #{queryString} or helpCode like #{queryString}
+            </if>
+        </where>
+    </select>
+
+    <!--    回显套餐-->
+    <select id="findById" parameterType="int" resultType="com.itheima.health.pojo.Setmeal">
+        select *
+        from t_setmeal
+        where id = #{id}
+    </select>
+
+    <!--    回显与套餐绑定的检查组-->
+    <select id="findCheckgroupIdsBySetmealId" parameterType="int" resultType="java.lang.Integer">
+        select checkgroup_id
+        from t_setmeal_checkgroup
+        where setmeal_id = #{id}
+    </select>
+
+    <!--    判断是否被订单使用-->
+    <select id="findOrderCountBySetmealId" parameterType="int" resultType="java.lang.Integer">
+        select count(1)
+        from t_order
+        where setmeal_id = #{id}
+    </select>
+</mapper>

@@ -38,6 +38,13 @@
         where checkgroup_id = #{id}
     </delete>
 
+    <!--    删除检查组-->
+    <delete id="deleteById" parameterType="int">
+        delete
+        from t_checkgroup
+        where id = #{id}
+    </delete>
+
     <!--    分页查询检查组-->
     <select id="findPage" parameterType="string" resultType="com.itheima.health.pojo.CheckGroup">
         select * from t_checkgroup
@@ -60,6 +67,18 @@
         select checkitem_id
         from t_checkgroup_checkitem
         where checkgroup_id = #{id}
+    </select>
+
+    <!--    查询检查组有没有被套餐使用-->
+    <select id="findSetmealCountByCheckGroupId" parameterType="int" resultType="java.lang.Integer">
+        select count(1)
+        from t_setmeal_checkgroup
+        where checkgroup_id = #{id}
+    </select>
+
+<!--    查询所有检查组-->
+    <select id="findAll" resultType="com.itheima.health.pojo.CheckGroup">
+        select * from t_checkgroup
     </select>
 
 

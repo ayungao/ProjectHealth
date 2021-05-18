@@ -9,7 +9,6 @@ import com.itheima.health.pojo.CheckGroup;
 import com.itheima.health.service.CheckGroupService;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -78,5 +77,26 @@ public class CheckGroupController {
     public Result update(@RequestBody CheckGroup checkGroup, Integer[] checkitemIds){
         checkGroupService.update(checkGroup,checkitemIds);
         return new Result(true,MessageConstant.EDIT_CHECKITEM_SUCCESS);
+    }
+
+    /**
+     * 根据id删除检查组
+     * @param id
+     * @return
+     */
+    @RequestMapping("/deleteById")
+    public Result deleteById(int id){
+        checkGroupService.deleteById(id);
+        return new Result(true,MessageConstant.DELETE_CHECKGROUP_SUCCESS);
+    }
+
+    /**
+     * 查询所有检查组
+     * @return
+     */
+    @RequestMapping("/findAll")
+    public Result findAll(){
+        List<CheckGroup> list = checkGroupService.findAll();
+        return new Result(true,MessageConstant.QUERY_CHECKGROUP_SUCCESS,list);
     }
 }

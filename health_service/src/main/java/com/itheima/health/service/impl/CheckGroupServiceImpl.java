@@ -6,6 +6,7 @@ import com.github.pagehelper.PageHelper;
 import com.itheima.health.dao.CheckGroupDao;
 import com.itheima.health.entity.PageResult;
 import com.itheima.health.entity.QueryPageBean;
+import com.itheima.health.exception.HealthException;
 import com.itheima.health.pojo.CheckGroup;
 import com.itheima.health.service.CheckGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,5 +94,29 @@ public class CheckGroupServiceImpl implements CheckGroupService {
         for (Integer checkitemId : checkitemIds) {
             checkGroupDao.addCheckGroupCheckItem(checkGroup.getId(),checkitemId);
         }
+    }
+
+    /**
+     * 根据id删除检查组
+     * @param id
+     */
+    @Override
+    @Transactional
+    public void deleteById(int id) throws HealthException{
+        int count = checkGroupDao.findSetmealCountByCheckGroupId(id);
+        if (count>0) {
+            throw new HealthException("该检查组已被套餐使用，删除失败");
+        }
+        checkGroupDao.deleteCheckGroupCheckItem(id);
+        checkGroupDao.deleteById(id);
+    }
+
+    /**
+     * 查询所有检查组
+     * @return
+     */
+    @Override
+    public List<CheckGroup> findAll() {
+        return checkGroupDao.findAll();
     }
 }
