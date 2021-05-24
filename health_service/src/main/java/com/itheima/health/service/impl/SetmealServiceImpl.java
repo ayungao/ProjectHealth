@@ -104,15 +104,16 @@ public class SetmealServiceImpl implements SetmealService {
 
     /**
      * 删除套餐
+     *
      * @param id
      */
     @Override
     @Transactional
-    public void deleteById(int id) throws HealthException{
+    public void deleteById(int id) throws HealthException {
         // 判断是否被订单使用
         int count = setmealDao.findOrderCountBySetmealId(id);
         // 使用了则报错
-        if(count > 0){
+        if (count > 0) {
             throw new HealthException("该套餐已经被使用了，不能删除");
         }
         // 未使用
@@ -122,5 +123,14 @@ public class SetmealServiceImpl implements SetmealService {
         setmealDao.deleteById(id);
     }
 
+    /**
+     * 查出数据库中的所有图片
+     *
+     * @return
+     */
+    @Override
+    public List<String> findImgs() {
+        return setmealDao.findImgs();
+    }
 
 }

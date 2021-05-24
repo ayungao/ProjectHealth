@@ -78,4 +78,9 @@
         from t_order
         where setmeal_id = #{id}
     </select>
+
+<!--    查出数据库中的所有图片-->
+    <select id="findImgs" resultType="java.lang.String">
+        select img from t_setmeal
+    </select>
 </mapper>

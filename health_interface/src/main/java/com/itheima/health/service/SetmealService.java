@@ -54,4 +54,10 @@ public interface SetmealService {
      * @param id
      */
     void deleteById(int id) throws HealthException;
+
+    /**
+     * 查出数据库中的所有图片
+     * @return
+     */
+    List<String> findImgs();
 }
