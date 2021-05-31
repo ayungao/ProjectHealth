@@ -79,8 +79,56 @@
         where setmeal_id = #{id}
     </select>
 
-<!--    查出数据库中的所有图片-->
+    <!--    查出数据库中的所有图片-->
     <select id="findImgs" resultType="java.lang.String">
-        select img from t_setmeal
+        select img
+        from t_setmeal
+    </select>
+
+    <!--    查询所有套餐-->
+    <select id="findAll" resultType="com.itheima.health.pojo.Setmeal">
+        select *
+        from t_setmeal
+    </select>
+
+    <resultMap id="setmealDetailMap" type="com.itheima.health.pojo.Setmeal">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="code" column="code"/>
+        <result property="helpCode" column="helpCode"/>
+        <result property="sex" column="sex"/>
+        <result property="age" column="age"/>
+        <result property="price" column="price"/>
+        <result property="remark" column="remark"/>
+        <result property="attention" column="attention"/>
+        <result property="img" column="img"/>
+        <collection property="checkGroups" ofType="com.itheima.health.pojo.CheckGroup">
+            <id property="id" column="checkgroup_id"/>
+            <result property="name" column="checkgroup_name"/>
+            <result property="remark" column="checkgroup_remark"/>
+            <collection property="checkItems" ofType="com.itheima.health.pojo.CheckItem">
+                <id property="id" column="checkitem_id"/>
+                <result property="name" column="checkitem_name"/>
+            </collection>
+        </collection>
+    </resultMap>
+    <!--    套餐详情-->
+    <select id="findDetailById" parameterType="int" resultMap="setmealDetailMap">
+        select e.*,
+               d.checkgroup_id,
+               c.name   checkgroup_name,
+               c.remark checkgroup_remark,
+               b.checkitem_id,
+               a.name   checkitem_name
+        from t_checkitem a,
+             t_checkgroup_checkitem b,
+             t_checkgroup c,
+             t_setmeal_checkgroup d,
+             t_setmeal e
+        where a.id = b.checkitem_id
+          and b.checkgroup_id = c.id
+          and c.id = d.checkgroup_id
+          and d.setmeal_id = e.id
+          and e.id = #{id}
     </select>
 </mapper>

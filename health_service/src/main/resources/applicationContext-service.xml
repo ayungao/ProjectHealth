@@ -16,4 +16,5 @@
     <dubbo:annotation package="com.itheima.health.service"/>
     <!--导入service配置-->
     <import resource="classpath:applicationContext-tx.xml"/>
+    <import resource="classpath:applicationContext-freemarker.xml"/>
 </beans>

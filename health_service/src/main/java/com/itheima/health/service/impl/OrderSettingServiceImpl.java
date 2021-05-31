@@ -24,6 +24,7 @@ public class OrderSettingServiceImpl implements OrderSettingService {
 
     /**
      * 批量导入预约设置
+     *
      * @param orderSettingList
      */
     @Override
@@ -33,16 +34,16 @@ public class OrderSettingServiceImpl implements OrderSettingService {
             // 通过日期查询预约设置信息
             OrderSetting osInDB = orderSettingDao.findByOrderDate(orderSetting.getOrderDate());
             // 存在
-            if(null != osInDB) {
+            if (null != osInDB) {
                 //     判断已预约数量是否大于 将要更新的 可预约数量
-                if(osInDB.getReservations() > orderSetting.getNumber()) {
+                if (osInDB.getReservations() > orderSetting.getNumber()) {
                     //         大于 报错
                     throw new HealthException(orderSetting.getOrderDate() + "中：可预约数不能小于已预约数");
-                }else {
+                } else {
                     //         小于要更新可预约数
                     orderSettingDao.updateNumber(orderSetting);
                 }
-            }else {
+            } else {
                 // 不存在 添加预约设置
                 orderSettingDao.add(orderSetting);
             }
@@ -51,6 +52,7 @@ public class OrderSettingServiceImpl implements OrderSettingService {
 
     /**
      * 通过月份查询预约设置信息
+     *
      * @param month
      * @return
      */
@@ -61,9 +63,28 @@ public class OrderSettingServiceImpl implements OrderSettingService {
         // 结束日期
         String endDate = month + "-31";
         // 调用dao查询
-        Map<String,String> map = new HashMap<String,String>();
-        map.put("startDate",startDate);
-        map.put("endDate",endDate);
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("startDate", startDate);
+        map.put("endDate", endDate);
         return orderSettingDao.getOrderSettingByMonth(map);
+    }
+
+    /**
+     * 基于日历的预约设置
+     *
+     * @param os
+     */
+    @Override
+    public void editNumberByDate(OrderSetting os) throws HealthException{
+        OrderSetting osInDb = orderSettingDao.findByOrderDate(os.getOrderDate());
+        if (osInDb != null) {
+            if (osInDb.getReservations() > os.getNumber()) {
+                throw new HealthException(os.getOrderDate() + "中：可预约数不能小于已预约数");
+            } else {
+                orderSettingDao.updateNumber(os);
+            }
+        } else {
+            orderSettingDao.add(os);
+        }
     }
 }

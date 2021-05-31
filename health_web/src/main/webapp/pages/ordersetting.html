@@ -156,6 +156,33 @@
             },
             //预约设置
             handleOrderSet(day) {
+                this.$prompt('请输入可预约人数', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    inputPattern: /^[1-9]\d*$/,
+                    inputErrorMessage: '只能输入数字'
+                }).then(({value}) => {
+                    var dateStr = this.formatDate(day.getFullYear(), day.getMonth() + 1, day.getDate());
+                    var params = {
+                        orderDate: dateStr,
+                        number: value
+                    }
+                    axios.post("/ordersetting/editNumberByDate.do",params).then(res => {
+                        this.$message({
+                            message: res.data.message,
+                            type: res.data.flag ? "success" : "error",
+                            showClose: true
+                        });
+                        if (res.data.flag) {
+                            this.getDataByMonth()
+                        }
+                    })
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '取消输入'
+                    });
+                });
             },
             //上传之前进行文件格式校验
             beforeUpload(file) {

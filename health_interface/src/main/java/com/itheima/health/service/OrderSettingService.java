@@ -1,6 +1,7 @@
 package com.itheima.health.service;
 
 import com.itheima.health.pojo.OrderSetting;
+import com.sun.xml.internal.ws.handler.HandlerException;
 
 import java.util.List;
 import java.util.Map;
@@ -23,4 +24,10 @@ public interface OrderSettingService {
      * @return
      */
     List<Map<String, Integer>> getOrderSettingByMonth(String month);
+
+    /**
+     * 基于日历的预约设置
+     * @param orderSetting
+     */
+    void editNumberByDate(OrderSetting orderSetting) throws HandlerException;
 }
