@@ -31,4 +31,19 @@
         where orderDate between #{startDate}
           and #{endDate}
     </select>
+
+    <!--更新已预约人数-->
+    <update id="editReservationsByOrderDate" parameterType="com.itheima.health.pojo.OrderSetting">
+        update t_ordersetting
+        set reservations = reservations + 1
+        where orderDate = #{orderDate}
+          and number > reservations
+    </update>
+
+    <!--根据预约日期查询-->
+    <select id="findCountByOrderDate" parameterType="Date" resultType="long">
+        select count(*)
+        from t_ordersetting
+        where orderDate = #{orderDate}
+    </select>
 </mapper>

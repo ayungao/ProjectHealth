@@ -27,17 +27,15 @@ public class TencentSMSUtils {
     private static final String signName = "AyuNGao项目测试";
 
     public static void main(String[] args) {
-        sendShortMessage(TencentSMSUtils.VALIDATE_CODE,"15221504896","666666");
+//        sendShortMessage(TencentSMSUtils.VALIDATE_CODE, "15221504896", "666666");
     }
 
     /**
-     *
-     * @param templateId 短信模板id，可选VALIDATE_CODE（发送短信验证码）和ORDER_NOTICE（体检预约成功通知）
-     * @param phoneNumber 手机号码
+     * @param templateId    短信模板id，可选VALIDATE_CODE（发送短信验证码）和ORDER_NOTICE（体检预约成功通知）
+     * @param phoneNumber   手机号码
      * @param templateParam 要发送的验证码
      */
-    public static void sendShortMessage(String templateId,String phoneNumber, String templateParam) {
-        try {
+    public static void sendShortMessage(String templateId, String phoneNumber, String templateParam) throws TencentCloudSDKException {
             /* 必要步骤：
              * 实例化一个认证对象，入参需要传入腾讯云账户密钥对secretId，secretKey。
              * 这里采用的是从环境变量读取的方式，需要在环境变量中先设置这两个值。
@@ -96,7 +94,7 @@ public class TencentSMSUtils {
             req.setTemplateId(templateId);
             /* 下发手机号码，采用 E.164 标准，+[国家或地区码][手机号]
              * 示例如：+8613711112222， 其中前面有一个+号 ，86为国家码，13711112222为手机号，最多不要超过200个手机号 */
-            String[] phoneNumberSet = {"+86"+phoneNumber};
+            String[] phoneNumberSet = {"+86" + phoneNumber};
             req.setPhoneNumberSet(phoneNumberSet);
             /* 模板参数: 若无模板参数，则设置为空 */
             String[] templateParamSet = {templateParam};
@@ -108,8 +106,6 @@ public class TencentSMSUtils {
             System.out.println(SendSmsResponse.toJsonString(res));
             // 也可以取出单个值，你可以通过官网接口文档或跳转到response对象的定义处查看返回字段的定义
             System.out.println(res.getRequestId());
-        } catch (TencentCloudSDKException e) {
-            e.printStackTrace();
-        }
+
     }
 }

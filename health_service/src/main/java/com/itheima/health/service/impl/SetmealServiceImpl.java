@@ -159,8 +159,23 @@ public class SetmealServiceImpl implements SetmealService {
 
         // 生成列表静态文件
         generateSetmealList(list);
+        generateSetmealDetals(list);
 
         return list;
+    }
+
+    private void generateSetmealDetals(List<Setmeal> list) {
+        Map<String, Object> dataMap = new HashMap<String, Object>();
+        for (Setmeal setmeal : list) {
+            Setmeal setmealDetail = setmealDao.findDetailById(setmeal.getId());
+//            设置完整的img
+            setmealDetail.setImg(setmeal.getImg());
+//            数据模型
+            dataMap.put("setmeal", setmealDetail);
+            // 输出
+            String filename = String.format("%s/setmeal_%d.html",out_put_path,setmealDetail.getId());
+            generateHtml("mobile_setmeal_detail.ftl", dataMap, filename);
+        }
     }
 
     @Autowired

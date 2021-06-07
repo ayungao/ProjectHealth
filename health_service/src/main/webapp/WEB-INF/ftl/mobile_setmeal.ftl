@@ -25,8 +25,8 @@
         <div class="list-column1">
             <ul class="list">
                 <#list setmealList as setmeal>
-                <li class="list-item" v-for="setmeal in setmealList">
-                    <a class="link-page" href="'setmeal_${setmeal.id}.html">
+                <li class="list-item">
+                    <a class="link-page" href="setmeal_${setmeal.id}.html">
                         <img class="img-object f-left" src="${setmeal.img}" alt="">
                         <div class="item-body">
                             <h4 class="ellipsis item-title">${setmeal.name}</h4>
