@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>登陆页面</title></head>
+<body onload='document.f.username.focus();'>
+<h3>用户登陆</h3>
+<form name='f' action='/login.do' method='POST'>
+    <table>
+        <tr>
+            <td>用户名:</td>
+            <td><input type='text' name='abc' value=''></td>
+        </tr>
+        <tr>
+            <td>密码:</td>
+            <td><input type='password' name='bcd'/></td>
+        </tr>
+        <tr>
+            <td colspan='2'><input name="submit" type="submit" value="Login"/></td>
+        </tr>
+<!--        <input name="_csrf" type="hidden" value="d590dd08-cb1f-4179-a9a2-8ea058cfc60a"/>-->
+    </table>
+</form>
+</body>
+</html>

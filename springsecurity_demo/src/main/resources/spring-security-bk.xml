@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:http="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+<!--
+【注意】在这个配置文件里，所有的路径必须是以/开头
+-->
+<!--  静态资源过滤
+pattern: 访问的路径，security=none 匿名访问，公开
+-->
+    <security:http pattern="/login.html" security="none"/>
+    <security:http pattern="/fail.html" security="none"/>
+<!--  拦截的规则
+  auto-config: 自动装配，处理login页面，认证的处理....
+  use-expressions: 是否使用spel表达式 与其下的intercept-url access 有关
+        true: access的值可以为hasAnyRole hasAnyAuthority...
+        false: 必须使用ROLE_打头的 角色 ROLE_大写
+   intercept-url: 拦截url配置
+   pattern: 拦截的匹配规则 /** 所有的
+   access: 要访问必须具备有这个权限， 给拦截的url标定权限
+   这里的意思：要访问/**,登陆用户必须拥有ROLE_ADMIN的角色
+-->
+    <security:http auto-config="true" use-expressions="false">
+        <security:intercept-url pattern="/**" access="ROLE_ADMIN"/>
+<!--   自定义登陆配置
+login-page: 指定登陆页面
+login-processing-url: 指定登陆处理的url
+username-parameter: 登陆请求时，传递过来的 用户名参数名  request.getParameter("abc") 获取页面填写的用户名
+password-parameter: 获取密码的参数名 request.getParameter("bcd") 获取页面填写的密码
+default-target-url: 登陆成功后默认跳转的url
+always-use-default-target: 为true时。不管是从哪个页面进入到登陆的，登陆成功后都跳转到 default-target-url
+-->
+        <security:form-login
+            login-page="/login.html"
+            login-processing-url="/login.do"
+            username-parameter="abc"
+            password-parameter="bcd"
+            authentication-failure-url="/fail.html"
+            default-target-url="/index.html"
+            always-use-default-target="true"
+        />
+<!--    关闭跨域访问限制    -->
+        <security:csrf disabled="true"/>
+    </security:http>
+
+<!--  认证管理器  -->
+    <security:authentication-manager>
+<!--  认证信息的提供者,认证的方式 提供登陆用户信息
+     找容器中的user-service-ref: userService 这个对象来获取登陆用户信息
+     userService 必须实现UserDetailsService接口， 且要让这个实现类进入spring容器
+-->
+        <security:authentication-provider user-service-ref="userService">
+<!--   指定密码匹配器, 数据库的密码就不要加{bcrypt}         -->
+            <security:password-encoder ref="encoder"/>
+<!--            <security:user-service>
+            在内存中写死一个用户信息
+                   必须包含3个
+                   name: 登陆用户名
+                   password: 密码  {noop} 代表使用明文
+                   authorities: 这个登陆用户所拥有的权限集合
+
+              <security:user name="admin" authorities="ROLE_ADMIN" password="{noop}admin"/>
+            </security:user-service>-->
+        </security:authentication-provider>
+    </security:authentication-manager>
+<!--  注册userService  必须实现 UserDetailsService  -->
+    <bean id="userService" class="com.itheima.security.UserService"/>
+
+    <bean id="encoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+</beans>

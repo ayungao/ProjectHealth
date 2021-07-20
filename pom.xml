@@ -16,6 +16,7 @@
         <module>health_web</module>
         <module>health_jobs</module>
         <module>health_mobile</module>
+        <module>springsecurity_demo</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -274,7 +275,6 @@
             <version>${servlet-api.version}</version>
             <scope>provided</scope>
         </dependency>
-
     </dependencies>
 
 </project>
