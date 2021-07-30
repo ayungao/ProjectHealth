@@ -7,7 +7,7 @@
        http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
 
     <!--1：包扫描-->
-    <dubbo:annotation package="com.itheima.health"/>
+    <dubbo:annotation package="com.itheima.health.controller,com.itheima.health.security"/>
     <!--2：视图解析器-->
     <!--3：springmvc注解驱动，自动配置mvc的处理器适配器和处理映射器-->
     <mvc:annotation-driven>

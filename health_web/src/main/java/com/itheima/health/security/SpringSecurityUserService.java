@@ -1,5 +1,6 @@
 package com.itheima.health.security;
 
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.itheima.health.pojo.Permission;
 import com.itheima.health.pojo.Role;
 import com.itheima.health.pojo.User;
@@ -10,6 +11,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,9 +22,10 @@ import java.util.Set;
  * @author: AyuNGao
  * @date: 21/7/20 23:33
  */
+@Component
 public class SpringSecurityUserService implements UserDetailsService {
 
-    @Autowired
+    @Reference
     private UserService userService;
 
     @Override

@@ -3,7 +3,6 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:security="http://www.springframework.org/schema/security"
        xmlns:http="http://www.springframework.org/schema/security"
-       xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
     <!--
     【注意】在这个配置文件里，所有的路径必须是以/开头
@@ -18,6 +17,7 @@
     <security:http pattern="/plugins/**" security="none"/>
     <security:http pattern="/login.html" security="none"/>
     <security:http pattern="/fail.html" security="none"/>
+    <security:http pattern="/user/loginFail.do" security="none"/>
     <!--  拦截的规则
       auto-config: 自动装配，处理login页面，认证的处理....
       use-expressions: 是否使用spel表达式 与其下的intercept-url access 有关
@@ -33,7 +33,10 @@
     <security:http auto-config="true" use-expressions="true">
         <!--只要认证通过就可以访问-->
         <security:intercept-url pattern="/**" access="isAuthenticated()"/>
-
+        <!--  frame 前端中的页面嵌套规则  嵌套的页面与本网站同源     -->
+        <security:headers>
+            <security:frame-options policy="SAMEORIGIN"/>
+        </security:headers>
         <!--   自定义登陆配置
         login-page: 指定登陆页面
         login-processing-url: 指定登陆处理的url
@@ -47,8 +50,8 @@
                 login-processing-url="/login.do"
                 username-parameter="username"
                 password-parameter="password"
-                default-target-url="/pages/main.html"
-                authentication-failure-url="/fail.html"
+                default-target-url="/user/loginSuccess.do"
+                authentication-failure-url="/user/loginFail.do"
                 always-use-default-target="true"/>
         <!--    关闭跨域访问限制    -->
         <security:csrf disabled="true"/>
@@ -67,7 +70,7 @@
              找容器中的user-service-ref: userService 这个对象来获取登陆用户信息
              userService 必须实现UserDetailsService接口， 且要让这个实现类进入spring容器
         -->
-        <security:authentication-provider user-service-ref="userService">
+        <security:authentication-provider user-service-ref="springSecurityUserService">
             <!--   指定密码匹配器, 数据库的密码就不要加{bcrypt}         -->
             <security:password-encoder ref="encoder"/>
             <!--            <security:user-service>
@@ -86,7 +89,7 @@
     <security:global-method-security pre-post-annotations="enabled"/>
 
     <!--  注册userService  必须实现 UserDetailsService  -->
-    <bean id="userService" class="com.itheima.health.security.SpringSecurityUserService"/>
 
     <bean id="encoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+
 </beans>
