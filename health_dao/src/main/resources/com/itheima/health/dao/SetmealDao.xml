@@ -131,4 +131,15 @@
           and d.setmeal_id = e.id
           and e.id = #{id}
     </select>
+
+    <select id="findSetmealCount" resultType="java.util.Map">
+        select s.name, t.value
+        from t_setmeal s,
+             (
+                 select count(1) value, setmeal_id
+                 from t_order
+                 group by setmeal_id
+             ) t
+        where s.id = t.setmeal_id
+    </select>
 </mapper>

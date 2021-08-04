@@ -279,16 +279,29 @@ public class DateUtils {
     }
 
     //获得本月一日的日期
-    public static Date getFirstDay4ThisMonth(){
+    public static Date getFirstDayOfThisMonth(){
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.DAY_OF_MONTH,1);
+        return calendar.getTime();
+    }
+
+    //获得本月最后一天日期
+    public static Date getLastDayOfThisMonth(){
+        Calendar calendar = Calendar.getInstance();
+        // 下个月
+        calendar.add(Calendar.MONTH,1);
+        // 设置为1号
+        calendar.set(Calendar.DAY_OF_MONTH,1);
+        // 减去1天
+        calendar.add(Calendar.DATE,-1);
+        // 这个月的最后一天
         return calendar.getTime();
     }
 
     public static void main(String[] args) {
         try {
             System.out.println("本周一" + parseDate2String(getThisWeekMonday()));
-            System.out.println("本月一日" + parseDate2String(getFirstDay4ThisMonth()));
+            System.out.println("本月一日" + parseDate2String(getFirstDayOfThisMonth()));
         } catch (Exception e) {
             e.printStackTrace();
         }

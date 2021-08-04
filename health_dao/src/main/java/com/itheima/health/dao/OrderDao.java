@@ -20,5 +20,7 @@ public interface OrderDao {
 
     Integer findVisitsCountAfterDate(String date);
 
-    List<Map> findHotSetmeal();
+    List<Map<String, Object>> findHotSetmeal();
+
+    int findOrderCountBetweenDate(String monday, String sunday);
 }

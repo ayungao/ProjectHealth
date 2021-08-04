@@ -2,6 +2,8 @@ package com.itheima.health.service;
 
 import com.itheima.health.pojo.Member;
 
+import java.util.List;
+
 /**
  * @description:
  * @author: AyuNGao
@@ -20,4 +22,11 @@ public interface MemberService {
      * @param member
      */
     void add(Member member);
+
+    /**
+     * 统计每个月最后一天时 会员的总数量
+     * @param months
+     * @return
+     */
+    List<Integer> getMemberReport(List<String> months);
 }
