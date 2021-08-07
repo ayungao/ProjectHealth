@@ -33,6 +33,7 @@
         <div class="box" style="height: 900px">
             <div class="excelTitle">
                 <el-button @click="exportExcel">导出Excel</el-button>
+                <el-button @click="exportPDF">导出PDF</el-button>
                 运营数据统计
             </div>
             <div class="excelTime">日期：{{reportData.reportDate}}</div>
@@ -133,6 +134,10 @@
             exportExcel() {
                 // get请求
                 window.location.href = '/report/exportBusinessReport2.do';
+            },
+            exportPDF(){
+                window.location.href = '/report/exportBusinessReportPDF.do';
+
             }
         }
     })

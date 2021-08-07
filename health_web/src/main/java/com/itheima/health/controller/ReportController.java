@@ -6,6 +6,11 @@ import com.itheima.health.entity.Result;
 import com.itheima.health.service.MemberService;
 import com.itheima.health.service.ReportService;
 import com.itheima.health.service.SetmealService;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -92,27 +97,28 @@ public class ReportController {
 
     /**
      * 运营统计数据
+     *
      * @return
      */
     @RequestMapping("/getBusinessReportData")
-    public Result getBusinessReportData(){
-        Map<String,Object> reportData = reportService.getBusinessReportData();
-        return new Result(true, MessageConstant.GET_BUSINESS_REPORT_SUCCESS,reportData);
+    public Result getBusinessReportData() {
+        Map<String, Object> reportData = reportService.getBusinessReportData();
+        return new Result(true, MessageConstant.GET_BUSINESS_REPORT_SUCCESS, reportData);
     }
 
     /**
      * 导出运营统计数据
      */
     @GetMapping("/exportBusinessReport")
-    public void exportBusinessReport(HttpServletRequest req, HttpServletResponse res){
+    public void exportBusinessReport(HttpServletRequest req, HttpServletResponse res) {
         // 获取报表数据
-        Map<String,Object> reportData = reportService.getBusinessReportData();
+        Map<String, Object> reportData = reportService.getBusinessReportData();
         // 获取导出的excel模板
         // getRealPath webapp/目录下
         String template = req.getSession().getServletContext().getRealPath("/template/report_template.xlsx");
         // 加载excel创建workbook
         // 在try(实现Closeable接口)
-        try(Workbook wk = new XSSFWorkbook(template)) {
+        try (Workbook wk = new XSSFWorkbook(template)) {
             // 获取工作表
             Sheet sht = wk.getSheetAt(0);
             // 找到单元格并赋值
@@ -133,20 +139,20 @@ public class ReportController {
             sht.getRow(9).getCell(7).setCellValue((Integer) reportData.get("thisMonthVisitsNumber"));
 
             // 热门套餐
-            List<Map<String,Object>> hotSetmeal = (List<Map<String,Object>>)reportData.get("hotSetmeal");
+            List<Map<String, Object>> hotSetmeal = (List<Map<String, Object>>) reportData.get("hotSetmeal");
             int rowIndex = 12;
             for (Map<String, Object> setmeal : hotSetmeal) {
                 sht.getRow(rowIndex).getCell(4).setCellValue(((String) setmeal.get("name")));
-                sht.getRow(rowIndex).getCell(5).setCellValue((Long)setmeal.get("setmeal_count"));
+                sht.getRow(rowIndex).getCell(5).setCellValue((Long) setmeal.get("setmeal_count"));
                 BigDecimal proportion = (BigDecimal) setmeal.get("proportion");
                 sht.getRow(rowIndex).getCell(6).setCellValue(proportion.doubleValue());
-                sht.getRow(rowIndex).getCell(7).setCellValue((String)setmeal.get("remark"));
+                sht.getRow(rowIndex).getCell(7).setCellValue((String) setmeal.get("remark"));
                 rowIndex++;
             }
-            String filename="运营数据统计.xlsx";
-            filename = new String(filename.getBytes(),"ISO-8859-1");
+            String filename = "运营数据统计.xlsx";
+            filename = new String(filename.getBytes(), "ISO-8859-1");
             // 设置响应的头信息，告诉浏览器，是下载文件
-            res.setHeader("Content-Disposition","attachment;filename=" + filename);
+            res.setHeader("Content-Disposition", "attachment;filename=" + filename);
             // 告诉浏览器，我的内容体的文件格式是excel
             res.setContentType("application/vnd.ms-excel");
             wk.write(res.getOutputStream());
@@ -157,11 +163,12 @@ public class ReportController {
 
     /**
      * 条件：数据相对固定且有规律
+     *
      * @param req
      * @param res
      */
     @GetMapping("/exportBusinessReport2")
-    public void exportBusinessReport2(HttpServletRequest req, HttpServletResponse res){
+    public void exportBusinessReport2(HttpServletRequest req, HttpServletResponse res) {
         String template = req.getSession().getServletContext().getRealPath("template") + File.separator + "report_template2.xlsx";
         // 数据模型 map
         Context context = new PoiContext();
@@ -170,9 +177,36 @@ public class ReportController {
             res.setContentType("application/vnd.ms-excel");
             res.setHeader("content-Disposition", "attachment;filename=report.xlsx");
             // 把数据模型中的数据填充到文件中
-            JxlsHelper.getInstance().processTemplate(new FileInputStream(template),res.getOutputStream(),context);
+            JxlsHelper.getInstance().processTemplate(new FileInputStream(template), res.getOutputStream(), context);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @RequestMapping("/exportBusinessReportPDF")
+    public Result exportBusinessReportPDF(HttpServletRequest req, HttpServletResponse res) {
+        // 查询运营统计数据
+        Map<String, Object> businessReportData = reportService.getBusinessReportData();
+        // 获取模板所在
+        String jrxml = req.getSession().getServletContext().getRealPath("/template/health_business3.jrxml");
+        // 定义编译的模板文件
+        String jasper = req.getSession().getServletContext().getRealPath("/template/health_business3.jasper");
+        // 编译
+        try {
+            JasperCompileManager.compileReportToFile(jrxml, jasper);
+            // 设置响应头
+            res.setHeader("Content-Disposition", "attachment;filename=business.pdf");
+            // 设置内容体格式
+            res.setContentType("application/pdf");
+            // 填充数据
+            JasperPrint print = JasperFillManager.fillReport(jasper, businessReportData,
+                    new JRBeanCollectionDataSource((List<Map<String, Object>>) businessReportData.get("hotSetmeal")));
+            // 导出pdf
+            JasperExportManager.exportReportToPdfStream(print, res.getOutputStream());
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new Result(false, "导出运营数据统计pdf失败");
     }
 }

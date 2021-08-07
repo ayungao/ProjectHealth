@@ -41,6 +41,7 @@
         <jedis.version>2.9.0</jedis.version>
         <quartz.version>2.2.1</quartz.version>
         <freemarker.version>2.3.23</freemarker.version>
+        <jasperreports>6.17.0</jasperreports>
     </properties>
 
     <!-- 依赖管理标签  必须加 -->
@@ -262,6 +263,12 @@
                 <!-- go to https://search.maven.org/search?q=tencentcloud-sdk-java and get the latest version. -->
                 <!-- 请到https://search.maven.org/search?q=tencentcloud-sdk-java查询所有版本，最新版本如下 -->
                 <version>3.1.282</version>
+            </dependency>
+<!--            pdf报表-->
+            <dependency>
+                <groupId>net.sf.jasperreports</groupId>
+                <artifactId>jasperreports</artifactId>
+                <version>${jasperreports}</version>
             </dependency>
         </dependencies>
 
